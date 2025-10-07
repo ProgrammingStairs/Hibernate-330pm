@@ -14,14 +14,14 @@ public class HibernateMain{
 	public static void main(String args[]) {
 		createDatabaseIfNotExist();
 		Student student = new Student();
-		student.setName("Andrew Anderson");
-		student.setEmail("andrew@gmail.com");
-		student.setPassword("andrew@123");
-		student.setAddress("Indore MP");
+		student.setName("Mark");
+		student.setEmail("mark@gmail.com");
+		student.setPassword("mark@123");
+		student.setAddress("Indore");
 		
 		Passport passport = new Passport();
-		passport.setPassportNumber("STUD123PASS101");
-		
+		passport.setPassportNumber("STUD123PASS104");
+		passport.setStudent(student);
 		student.setPassport(passport);
 		
 		Session session = HibernateUtils.getSessionFactory().openSession();
@@ -29,12 +29,30 @@ public class HibernateMain{
 		
 		try {
 			tx = session.beginTransaction();
+			// session.persist(passport); // if student.setPassport(passport); is commented and  session.persist(passport); is also commented then passport table will not add entry but if student.setPassport(passport); is commented and session.persist(passport); is uncommented then entry will takes place 
 			session.persist(student);
 			// If exception occurs, then there will be chances of rollback
 //			session.flush();
 			tx.commit();
 			
-	
+			System.out.println("pid : "+passport.getPid());
+			Passport pass = session.get(Passport.class, passport.getPid());
+			System.out.println("pass : "+pass);
+
+			System.out.println("Passport Id : "+pass.getPid());
+			System.out.println("Passport Number : "+pass.getPassportNumber());
+			System.out.println("Passport Student : "+pass.getStudent());
+			
+
+			Student stud = session.get(Student.class, student.getSid());
+			System.out.println("Student Id : "+stud.getSid());
+			System.out.println("Student Name : "+stud.getName());
+			System.out.println("Student Email : "+stud.getEmail());
+			System.out.println("Student Password : "+stud.getPassword());
+			System.out.println("Student Address : "+stud.getAddress());
+			System.out.println("Student passport: "+stud.getPassport());
+
+			
 		}catch(Exception e) {
 			System.out.println("Exception : "+e);
 			if(tx!=null) {

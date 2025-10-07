@@ -11,7 +11,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="one_one_uni_student")
+@Table(name="one_one_bi_student")
 public class Student{ // owning side
 	
 	@Id
@@ -67,9 +67,20 @@ public class Student{ // owning side
 	public Passport getPassport() {
 		return passport;
 	}
+//	public void setPassport(Passport passport) {
+//		this.passport = passport;
+//	}
+	
 	public void setPassport(Passport passport) {
 		this.passport = passport;
+		if(passport!=null) {
+			passport.setStudent(this);
+		}
 	}
-	
-	
 }
+
+/*
+Without cascade → session.persist(student) will NOT insert passport, you must persist it separately.
+
+With cascade (cascade = CascadeType.PERSIST or CascadeType.ALL) → session.persist(student) will insert passport automatically.
+ */
