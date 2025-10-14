@@ -1,49 +1,41 @@
+// example showing the concept of pagination
 package com.hibernate.main;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.List;
 
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import org.hibernate.*;
+import org.hibernate.query.Query;
 
-import com.hibernate.model.Car;
-import com.hibernate.model.Truck;
-import com.hibernate.model.Vehicle;
-
+import com.hibernate.model.*;
 import com.hibernate.utils.HibernateUtil;
 
-public class HibernateMain{
+public class HibernateMain5{
 	public static void main(String args[]) {
 		createDatabaseIfNotExist();
-		Vehicle v1 = new Vehicle();
-		v1.setVehicleName("FourWheeler");
-		
-		Car c1 = new Car();
-		c1.setDoors(4);
-		c1.setVehicleName("Maruti");
-		
-		Truck t1 = new Truck();
-		t1.setContainer(4);
-		t1.setVehicleName("ForceMotors");
 		
 		Transaction tx = null;
 		try {
 			Session session =  HibernateUtil.getSessionFactory().openSession();
 			tx = session.beginTransaction();
-
-			session.persist(c1);
-			session.persist(t1);
-			session.persist(v1);
+			int pageNumber = 3;
+			int pageSize = 3;
 			
-			tx.commit();
+			String hqlQuery = "from User";
 			
-			List<Vehicle> list = session.createQuery("From Vehicle", Vehicle.class).getResultList();
-			for(Vehicle vec : list) {
-				System.out.println("Vehicle Id : "+vec.getVid()+" Name : "+vec.getVehicleName()+" Vehicle class : "+vec.getClass().getSimpleName());
+			Query<User> query =  session.createQuery(hqlQuery,User.class);
+			query.setFirstResult((pageNumber-1)*pageSize);
+			query.setMaxResults(pageSize);
+			
+			List<User> data = query.getResultList();
+			for(User user : data) {
+				System.out.println("\nUsername : "+user.getUsername());
+				System.out.println("Email : "+user.getEmail());
+				System.out.println("Password : "+user.getPassword());
+				System.out.println("Address : "+user.getAddress());
+				System.out.println("Salary : "+user.getSalary());
 			}
+			tx.commit();
 			
 		}catch(Exception e) {
 			System.out.println("Exception : "+e);

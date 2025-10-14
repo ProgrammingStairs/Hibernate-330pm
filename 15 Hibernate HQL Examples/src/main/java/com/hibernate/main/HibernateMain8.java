@@ -1,49 +1,44 @@
+// example showing the concept of native query 
 package com.hibernate.main;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.List;
 
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import org.hibernate.*;
+import org.hibernate.query.Query;
 
-import com.hibernate.model.Car;
-import com.hibernate.model.Truck;
-import com.hibernate.model.Vehicle;
-
+import com.hibernate.model.*;
 import com.hibernate.utils.HibernateUtil;
 
-public class HibernateMain{
+public class HibernateMain8{
 	public static void main(String args[]) {
 		createDatabaseIfNotExist();
-		Vehicle v1 = new Vehicle();
-		v1.setVehicleName("FourWheeler");
-		
-		Car c1 = new Car();
-		c1.setDoors(4);
-		c1.setVehicleName("Maruti");
-		
-		Truck t1 = new Truck();
-		t1.setContainer(4);
-		t1.setVehicleName("ForceMotors");
 		
 		Transaction tx = null;
 		try {
 			Session session =  HibernateUtil.getSessionFactory().openSession();
 			tx = session.beginTransaction();
-
-			session.persist(c1);
-			session.persist(t1);
-			session.persist(v1);
 			
+			// native query without annotation
+			String que = "select * from User1 where email=?";		
+			Query<User1> query =  session.createNativeQuery(que,User1.class);
+			query.setParameter(1, "peter@gmail.com");
+//			List<User1> data = query.getResultList();
+//			for(User1 user : data) {
+//				System.out.println("\nUsername : "+user.getUsername());
+//				System.out.println("Email : "+user.getEmail());
+//				System.out.println("Password : "+user.getPassword());
+//				System.out.println("Address : "+user.getAddress());
+//				System.out.println("Salary : "+user.getSalary());
+//			}
+			User1 obj = query.getSingleResult();
+			System.out.println("\nUsername : "+obj.getUsername());
+			System.out.println("Email : "+obj.getEmail());
+			System.out.println("Password : "+obj.getPassword());
+			System.out.println("Address : "+obj.getAddress());
+			System.out.println("Salary : "+obj.getSalary());
+		
 			tx.commit();
-			
-			List<Vehicle> list = session.createQuery("From Vehicle", Vehicle.class).getResultList();
-			for(Vehicle vec : list) {
-				System.out.println("Vehicle Id : "+vec.getVid()+" Name : "+vec.getVehicleName()+" Vehicle class : "+vec.getClass().getSimpleName());
-			}
 			
 		}catch(Exception e) {
 			System.out.println("Exception : "+e);

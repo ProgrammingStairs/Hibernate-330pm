@@ -1,49 +1,38 @@
+// example showing the concept of named query 
 package com.hibernate.main;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.List;
 
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import org.hibernate.*;
+import org.hibernate.query.Query;
 
-import com.hibernate.model.Car;
-import com.hibernate.model.Truck;
-import com.hibernate.model.Vehicle;
-
+import com.hibernate.model.*;
 import com.hibernate.utils.HibernateUtil;
 
-public class HibernateMain{
+public class HibernateMain10{
 	public static void main(String args[]) {
 		createDatabaseIfNotExist();
-		Vehicle v1 = new Vehicle();
-		v1.setVehicleName("FourWheeler");
-		
-		Car c1 = new Car();
-		c1.setDoors(4);
-		c1.setVehicleName("Maruti");
-		
-		Truck t1 = new Truck();
-		t1.setContainer(4);
-		t1.setVehicleName("ForceMotors");
 		
 		Transaction tx = null;
 		try {
 			Session session =  HibernateUtil.getSessionFactory().openSession();
 			tx = session.beginTransaction();
+			
+			// native query with annotation
+			Query<Object[]> query =  session.createNamedQuery("User1.printNameAndEmail",Object[].class);
+			
+//			List<Object[]> data = query.getResultList();
+//			for(Object[] row : data) {
+//				System.out.println("\nUsername : "+row[0]);
+//				System.out.println("Email : "+row[1]);
+//			}
 
-			session.persist(c1);
-			session.persist(t1);
-			session.persist(v1);
-			
+			Object[] row = query.getSingleResult();
+			System.out.println("\nUsername : "+row[0]);
+			System.out.println("Email : "+row[1]);
+		
 			tx.commit();
-			
-			List<Vehicle> list = session.createQuery("From Vehicle", Vehicle.class).getResultList();
-			for(Vehicle vec : list) {
-				System.out.println("Vehicle Id : "+vec.getVid()+" Name : "+vec.getVehicleName()+" Vehicle class : "+vec.getClass().getSimpleName());
-			}
 			
 		}catch(Exception e) {
 			System.out.println("Exception : "+e);

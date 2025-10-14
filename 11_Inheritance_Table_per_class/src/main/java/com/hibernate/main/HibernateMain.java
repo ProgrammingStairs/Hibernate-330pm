@@ -34,9 +34,9 @@ public class HibernateMain{
 			Session session =  HibernateUtil.getSessionFactory().openSession();
 			tx = session.beginTransaction();
 
+			session.persist(v1);
 			session.persist(c1);
 			session.persist(t1);
-			session.persist(v1);
 			
 			tx.commit();
 			

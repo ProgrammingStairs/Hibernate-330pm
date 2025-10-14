@@ -1,50 +1,47 @@
 package com.hibernate.main;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
-
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-
-import com.hibernate.model.Car;
-import com.hibernate.model.Truck;
-import com.hibernate.model.Vehicle;
-
+import java.sql.*;
+import org.hibernate.*;
+import com.hibernate.model.*;
 import com.hibernate.utils.HibernateUtil;
+import java.util.Scanner;
 
 public class HibernateMain{
 	public static void main(String args[]) {
 		createDatabaseIfNotExist();
-		Vehicle v1 = new Vehicle();
-		v1.setVehicleName("FourWheeler");
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Enter username : ");
+		String username = sc.nextLine();
 		
-		Car c1 = new Car();
-		c1.setDoors(4);
-		c1.setVehicleName("Maruti");
+		System.out.println("Enter email: ");
+		String email = sc.next();
 		
-		Truck t1 = new Truck();
-		t1.setContainer(4);
-		t1.setVehicleName("ForceMotors");
+		System.out.println("Enter password: ");
+		String password = sc.next();
+		
+		sc.nextLine();
+		System.out.println("Enter address: ");
+		String address = sc.nextLine();
+		
+		System.out.println("Enter salary: ");
+		int salary = sc.nextInt();
+		
+		User obj = new User();
+		obj.setUsername(username);
+		obj.setEmail(email);
+		obj.setPassword(password);
+		obj.setAddress(address);
+		obj.setSalary(salary);
 		
 		Transaction tx = null;
 		try {
 			Session session =  HibernateUtil.getSessionFactory().openSession();
 			tx = session.beginTransaction();
 
-			session.persist(c1);
-			session.persist(t1);
-			session.persist(v1);
-			
+			session.persist(obj);
 			tx.commit();
-			
-			List<Vehicle> list = session.createQuery("From Vehicle", Vehicle.class).getResultList();
-			for(Vehicle vec : list) {
-				System.out.println("Vehicle Id : "+vec.getVid()+" Name : "+vec.getVehicleName()+" Vehicle class : "+vec.getClass().getSimpleName());
-			}
-			
+			System.out.println("Data Inserted Successfully");
+
 		}catch(Exception e) {
 			System.out.println("Exception : "+e);
 			if(tx!=null) {
