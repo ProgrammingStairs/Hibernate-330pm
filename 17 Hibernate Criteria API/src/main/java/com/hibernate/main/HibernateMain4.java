@@ -13,7 +13,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
-public class HibernateMain1{
+public class HibernateMain4{
 	public static void main(String args[]) {
 		createDatabaseIfNotExist();
 		
@@ -25,16 +25,19 @@ public class HibernateMain1{
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
 			CriteriaQuery<User> query = criteriaBuilder.createQuery(User.class);
 			Root<User> root = query.from(User.class);
-			query.select(root);
+//			query.select(root).where(criteriaBuilder.gt(root.get("salary"), 50000));
+//			query.select(root).where(criteriaBuilder.greaterThan(root.get("salary"), 50000));		
+	// select * from User where salary>20000
+			query.select(root).where(criteriaBuilder.between(root.get("salary"), 60000,70000));	
 			
 			Query<User> list =  session.createQuery(query);
 			List<User> data = list.getResultList();
 			for(User user : data) {
 				System.out.println("\nUserId : "+user.getUid());
-				System.out.println("\nUsername : "+user.getUsername());
-				System.out.println("Email : "+user.getEmail());
-				System.out.println("Password : "+user.getPassword());
-				System.out.println("Address : "+user.getAddress());
+				System.out.println("Username : "+user.getUsername());
+				System.out.println("Email: "+user.getEmail());
+				System.out.println("Password: "+user.getPassword());
+				System.out.println("Address  : "+user.getAddress());
 				System.out.println("Salary : "+user.getSalary());
 			}
 			tx.commit();

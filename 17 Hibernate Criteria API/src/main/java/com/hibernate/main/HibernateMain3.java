@@ -13,7 +13,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
-public class HibernateMain1{
+public class HibernateMain3{
 	public static void main(String args[]) {
 		createDatabaseIfNotExist();
 		
@@ -23,19 +23,19 @@ public class HibernateMain1{
 			tx = session.beginTransaction();
 			
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-			CriteriaQuery<User> query = criteriaBuilder.createQuery(User.class);
+			CriteriaQuery<Object[]> query = criteriaBuilder.createQuery(Object[].class);
 			Root<User> root = query.from(User.class);
-			query.select(root);
+			query.multiselect(root.get("uid"),root.get("username"),root.get("email"),root.get("password"),root.get("address"),root.get("salary"));
 			
-			Query<User> list =  session.createQuery(query);
-			List<User> data = list.getResultList();
-			for(User user : data) {
-				System.out.println("\nUserId : "+user.getUid());
-				System.out.println("\nUsername : "+user.getUsername());
-				System.out.println("Email : "+user.getEmail());
-				System.out.println("Password : "+user.getPassword());
-				System.out.println("Address : "+user.getAddress());
-				System.out.println("Salary : "+user.getSalary());
+			Query<Object[]> list =  session.createQuery(query);
+			List<Object[]> data = list.getResultList();
+			for(Object[] row : data) {
+				System.out.println("\nUserId : "+row[0]);
+				System.out.println("Username : "+row[1]);
+				System.out.println("Email: "+row[2]);
+				System.out.println("Password: "+row[3]);
+				System.out.println("Address  : "+row[4]);
+				System.out.println("Salary : "+row[5]);
 			}
 			tx.commit();
 			

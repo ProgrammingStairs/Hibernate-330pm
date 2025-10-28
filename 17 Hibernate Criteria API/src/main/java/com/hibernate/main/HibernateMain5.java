@@ -1,6 +1,7 @@
 package com.hibernate.main;
 
 import java.sql.*;
+import java.util.Arrays;
 import java.util.List;
 
 import org.hibernate.*;
@@ -11,9 +12,10 @@ import com.hibernate.utils.HibernateUtil;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-public class HibernateMain1{
+public class HibernateMain5{
 	public static void main(String args[]) {
 		createDatabaseIfNotExist();
 		
@@ -25,16 +27,24 @@ public class HibernateMain1{
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
 			CriteriaQuery<User> query = criteriaBuilder.createQuery(User.class);
 			Root<User> root = query.from(User.class);
-			query.select(root);
+
+			// List of addresses to include
+			List<String> addresses = Arrays.asList("Indore", "Bhopal", "Ujjain");
+
+			// Apply IN clause
+			Predicate addressIn = root.get("address").in(addresses);
+//addressIn is a Predicate object, which represents a condition to be evaluated later when the query runs.
+			// Build query
+			query.select(root).where(addressIn);
 			
 			Query<User> list =  session.createQuery(query);
 			List<User> data = list.getResultList();
 			for(User user : data) {
 				System.out.println("\nUserId : "+user.getUid());
-				System.out.println("\nUsername : "+user.getUsername());
-				System.out.println("Email : "+user.getEmail());
-				System.out.println("Password : "+user.getPassword());
-				System.out.println("Address : "+user.getAddress());
+				System.out.println("Username : "+user.getUsername());
+				System.out.println("Email: "+user.getEmail());
+				System.out.println("Password: "+user.getPassword());
+				System.out.println("Address  : "+user.getAddress());
 				System.out.println("Salary : "+user.getSalary());
 			}
 			tx.commit();

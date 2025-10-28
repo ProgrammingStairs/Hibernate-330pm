@@ -13,7 +13,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
-public class HibernateMain1{
+public class HibernateMain8{
 	public static void main(String args[]) {
 		createDatabaseIfNotExist();
 		
@@ -23,20 +23,22 @@ public class HibernateMain1{
 			tx = session.beginTransaction();
 			
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-			CriteriaQuery<User> query = criteriaBuilder.createQuery(User.class);
+			CriteriaQuery<Integer> query = criteriaBuilder.createQuery(Integer.class);
 			Root<User> root = query.from(User.class);
-			query.select(root);
+//			query.select(criteriaBuilder.min(root.get("salary")));	
+//			query.select(criteriaBuilder.max(root.get("salary")));
+//			query.select(criteriaBuilder.avg(root.get("salary"))); // change to Double.class
+//			query.select(criteriaBuilder.count(root.get("salary"))); // change to Long.class
+			query.select(criteriaBuilder.sum(root.get("salary")));
 			
-			Query<User> list =  session.createQuery(query);
-			List<User> data = list.getResultList();
-			for(User user : data) {
-				System.out.println("\nUserId : "+user.getUid());
-				System.out.println("\nUsername : "+user.getUsername());
-				System.out.println("Email : "+user.getEmail());
-				System.out.println("Password : "+user.getPassword());
-				System.out.println("Address : "+user.getAddress());
-				System.out.println("Salary : "+user.getSalary());
-			}
+			Query<Integer> list =  session.createQuery(query);
+			Integer data = list.getSingleResult();
+//			System.out.println("Minimum Salary : "+data);
+//			System.out.println("Maximum Salary : "+data);
+//			System.out.println("Average Salary : "+data);
+//			System.out.println("Count: "+data);
+			System.out.println("Sum: "+data);
+			
 			tx.commit();
 			
 		}catch(Exception e) {
